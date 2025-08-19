@@ -1,217 +1,57 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Simulador de notas - VEST/UNB</title>
-  <style>
-    :root {
-      --bg: #0b0f14;
-      --card: #10161d;
-      --muted: #9fb3c8;
-      --text: #e6edf3;
-      --green: #16a34a;
-      --red: #ef4444;
-      --border: #223042;
-      --btn: #2563eb;
-      --btn-hover: #1d4ed8;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0; padding: 24px; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial;
-      background: var(--bg); color: var(--text);
-    }
-    h1 { font-size: 26px; margin: 0 0 20px; letter-spacing: .5px; text-align: center; color: #fff; }
-    .wrap { max-width: 720px; margin: 0 auto; display: grid; gap: 20px; }
-    .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 20px; box-shadow: 0 8px 24px rgba(0,0,0,.25); }
-    .card h2 { margin: 0 0 12px; font-size: 20px; color: #fff; }
-
-    /* ===== Entradas ===== */
-    .fields { display: grid; gap: 16px; }
-    .field { display: grid; gap: 8px; }
-    .labelText { color: var(--muted); font-size: 14px; line-height: 1.2; }
-
-    input[type="text"] {
-      width: 100%;
-      padding: 12px 14px;
-      border-radius: 10px;
-      border: 1px solid var(--border);
-      background: #ffffff;
-      color: #0b0f14;
-      font-size: 15px;
-    }
-    input[type="text"]::placeholder { color: #6b7280; }
-    .err { border-color: var(--red) !important; box-shadow: 0 0 0 3px rgba(239,68,68,.15); }
-    .ok  { border-color: var(--green) !important; box-shadow: 0 0 0 3px rgba(22,163,74,.12); }
-
-    /* Botão */
-    .btn {
-      display: block;
-      width: 100%;
-      margin-top: 20px;
-      padding: 14px;
-      font-size: 16px;
-      font-weight: bold;
-      text-align: center;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      background: var(--btn);
-      color: #fff;
-      transition: background .2s;
-    }
-    .btn:hover { background: var(--btn-hover); }
-
-    /* Link notas de corte */
-    .link-cut {
-      display: block;
-      margin-top: 12px;
-      text-align: center;
-      color: var(--red);
-      font-weight: bold;
-      text-decoration: none;
-    }
-    .link-cut:hover { text-decoration: underline; }
-
-    /* Resultados */
-    .totals { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
-    .big { font-size: 22px; font-weight: 700; text-align: center; }
-    .muted { color: var(--muted); text-align: center; margin-top: 4px; font-size: 14px; }
-    @media (max-width: 640px) { .totals { grid-template-columns: 1fr; } }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Notas de Corte</title>
+<style>
+    body { font-family: 'Open Sans', sans-serif; padding: 20px; }
+    h2 { color: #3498db; }
+    table { border-collapse: collapse; width: 100%; margin-top: 20px; display: none; }
+    th, td { border: 1px solid #3498db; text-align: left; padding: 10px; }
+    th { background-color: #2980b9; color: #ecf0f1; }
+    tbody tr:nth-child(even) { background-color: #ecf0f1; }
+    tbody tr:nth-child(odd) { background-color: #d4e6f1; }
+    .btn { background-color: #e74c3c; color: #fff; border: none; padding: 10px 15px; cursor: pointer; font-size: 16px; }
+    .clearfix::after { content: ""; clear: both; display: table; }
+</style>
 </head>
-<body>
-  <div class="wrap">
-    <h1>Simulador de notas - VEST/UNB</h1>
+<body class="clearfix">
 
-    <!-- Entradas -->
-    <section class="card">
-      <h2>Preencha suas notas</h2>
-      <div class="fields">
-        <div class="field">
-          <div class="labelText">Parte 1 - Idioma estrangeiro (máximo 30)</div>
-          <input id="B1" type="text" inputmode="decimal" placeholder="Coloque um número entre 0 e 30" />
-        </div>
-        <div class="field">
-          <div class="labelText">Parte 2 - Humanas (máximo 120)</div>
-          <input id="B2" type="text" inputmode="decimal" placeholder="Coloque um número entre 0 e 120" />
-        </div>
-        <div class="field">
-          <div class="labelText">Parte 3 - Exatas (máximo 150)</div>
-          <input id="B3" type="text" inputmode="decimal" placeholder="Coloque um número entre 0 e 150" />
-        </div>
-        <div class="field">
-          <div class="labelText">Redação (máximo 10)</div>
-          <input id="B4" type="text" inputmode="decimal" placeholder="Coloque um número entre 0 e 10" />
-        </div>
-      </div>
+<h2>Notas de Corte Atualizadas</h2>
 
-      <button class="btn" id="calcBtn">CALCULAR</button>
-      <!-- Link de notas de corte será inserido aqui dinamicamente -->
-      <div id="linkContainer"></div>
-    </section>
+<!-- Botão com emoji -->
+<button id="verNotasBtn" class="btn">👆 Ver Notas de Corte</button>
 
-    <!-- Resultados -->
-    <section class="card" id="resultCard">
-      <h2>RESULTADO</h2>
-      <div class="totals">
-        <div class="card" style="padding:16px;">
-          <div class="muted">Notas para cursos do Grupo 1</div>
-          <div class="big" id="D24">--</div>
-        </div>
-        <div class="card" style="padding:16px;">
-          <div class="muted">Notas para cursos do Grupo 2</div>
-          <div class="big" id="D25">--</div>
-        </div>
-      </div>
-    </section>
-  </div>
+<!-- Tabela de notas -->
+<table id="tabelaNotas">
+    <thead>
+        <tr>
+            <th>Curso</th>
+            <th>Nota de Corte</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr><td>Administração (Bacharelado)</td><td>-208,285</td></tr>
+        <tr><td>Administração (Bacharelado)</td><td>-137,955</td></tr>
+        <tr><td>Arquitetura e Urbanismo (Bacharelado)</td><td>93,445</td></tr>
+        <tr><td>Arquitetura e Urbanismo (Bacharelado)</td><td>-10,325</td></tr>
+        <tr><td>Arquivologia (Bacharelado)</td><td>-303,960</td></tr>
+        <!-- Continue com todas as linhas que você já tem -->
+    </tbody>
+</table>
 
-  <script>
-    const nf2 = new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    function parseLocaleNumber(str) {
-      if (typeof str !== 'string') return NaN;
-      const clean = str.trim().replace(/\./g, '').replace(',', '.');
-      return clean === '' ? NaN : Number(clean);
-    }
-    function clampValidate(input, min, max) {
-      const raw = input.value;
-      const n = parseLocaleNumber(raw);
-      if (Number.isNaN(n)) {
-        input.classList.remove('ok');
-        input.classList.remove('err');
-        return NaN;
-      }
-      if (n < min || n > max) {
-        input.classList.add('err');
-        input.classList.remove('ok');
-      } else {
-        input.classList.remove('err');
-        input.classList.add('ok');
-      }
-      return n;
-    }
-    function strToNumBR(s) { return Number(s.replace(/\./g, '').replace(',', '.')); }
+<script>
+    // Mostrar tabela ao clicar
+    const btn = document.getElementById('verNotasBtn');
+    const tabela = document.getElementById('tabelaNotas');
 
-    // Constantes escondidas
-    const I11 = strToNumBR("9,723");
-    const J11 = strToNumBR("59,64");
-    const K11 = strToNumBR("32,146");
-    const L11 = strToNumBR("7,107");
-    const O11 = strToNumBR("5,894");
-    const P11 = strToNumBR("18,954");
-    const Q11 = strToNumBR("24,914");
-    const R11 = strToNumBR("1,777");
+    btn.addEventListener('click', () => {
+        tabela.style.display = 'table';
+        // Oculta o botão depois do clique, se quiser
+        btn.style.display = 'none';
+    });
+</script>
 
-    const B1 = document.getElementById('B1');
-    const B2 = document.getElementById('B2');
-    const B3 = document.getElementById('B3');
-    const B4 = document.getElementById('B4');
-    const D24 = document.getElementById('D24');
-    const D25 = document.getElementById('D25');
-    const calcBtn = document.getElementById('calcBtn');
-    const linkContainer = document.getElementById('linkContainer');
-
-    function recalc() {
-      const vB1 = clampValidate(B1, 0, 30);
-      const vB2 = clampValidate(B2, 0, 120);
-      const vB3 = clampValidate(B3, 0, 150);
-      const vB4 = clampValidate(B4, 0, 10);
-
-      if ([vB1, vB2, vB3, vB4].some(n => Number.isNaN(n))) {
-        alert("Preencha dentro dos intervalos solicitados");
-        return;
-      }
-
-      const b1 = vB1;
-      const b2 = vB2;
-      const b3 = vB3;
-      const b4 = vB4;
-
-      // Cálculos internos
-      const c21 = ((b1 - I11) / O11) * 10;
-      const d21 = ((b2 - J11) / P11) * 10;
-      const e21 = ((b3 - K11) / Q11) * 10;
-      const f21 = ((b4 - L11) / R11) * 10;
-
-      const d24 = 2*c21 + 6*d21 + 5*e21 + 1.5*f21;
-      const d25 = c21 + 4*d21 + 8*e21 + 1.5*f21;
-
-      D24.textContent = nf2.format(d24);
-      D25.textContent = nf2.format(d25);
-
-      // Adiciona o link de notas de corte
-      if (!linkContainer.hasChildNodes()) {
-        const link = document.createElement('a');
-        link.href = "https://calculaenem.my.canva.site/vestunb/";
-        link.target = "_blank";
-        link.className = "link-cut";
-        link.textContent = "Clique aqui para ver notas de corte";
-        linkContainer.appendChild(link);
-      }
-    }
-
-    calcBtn.addEventListener('click', recalc);
-  </script>
 </body>
 </html>
