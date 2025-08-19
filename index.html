@@ -62,8 +62,19 @@
     }
     .btn:hover { background: var(--btn-hover); }
 
+    /* Link notas de corte */
+    .link-cut {
+      display: block;
+      margin-top: 12px;
+      text-align: center;
+      color: var(--red);
+      font-weight: bold;
+      text-decoration: none;
+    }
+    .link-cut:hover { text-decoration: underline; }
+
     /* Resultados */
-    .totals { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .totals { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
     .big { font-size: 22px; font-weight: 700; text-align: center; }
     .muted { color: var(--muted); text-align: center; margin-top: 4px; font-size: 14px; }
     @media (max-width: 640px) { .totals { grid-template-columns: 1fr; } }
@@ -96,10 +107,12 @@
       </div>
 
       <button class="btn" id="calcBtn">CALCULAR</button>
+      <!-- Link de notas de corte será inserido aqui dinamicamente -->
+      <div id="linkContainer"></div>
     </section>
 
     <!-- Resultados -->
-    <section class="card">
+    <section class="card" id="resultCard">
       <h2>RESULTADO</h2>
       <div class="totals">
         <div class="card" style="padding:16px;">
@@ -157,6 +170,7 @@
     const D24 = document.getElementById('D24');
     const D25 = document.getElementById('D25');
     const calcBtn = document.getElementById('calcBtn');
+    const linkContainer = document.getElementById('linkContainer');
 
     function recalc() {
       const vB1 = clampValidate(B1, 0, 30);
@@ -164,10 +178,15 @@
       const vB3 = clampValidate(B3, 0, 150);
       const vB4 = clampValidate(B4, 0, 10);
 
-      const b1 = Number.isFinite(vB1) ? vB1 : 0;
-      const b2 = Number.isFinite(vB2) ? vB2 : 0;
-      const b3 = Number.isFinite(vB3) ? vB3 : 0;
-      const b4 = Number.isFinite(vB4) ? vB4 : 0;
+      if ([vB1, vB2, vB3, vB4].some(n => Number.isNaN(n))) {
+        alert("Preencha dentro dos intervalos solicitados");
+        return;
+      }
+
+      const b1 = vB1;
+      const b2 = vB2;
+      const b3 = vB3;
+      const b4 = vB4;
 
       // Cálculos internos
       const c21 = ((b1 - I11) / O11) * 10;
@@ -180,17 +199,18 @@
 
       D24.textContent = nf2.format(d24);
       D25.textContent = nf2.format(d25);
-        <div class="section-break"></div>
 
-        <div class="button-container">
-            <a href="https://calculaenem.my.canva.site/vestunb/" target="_blank">Ver notas de Corte</a>
-        </div>
-
-        <div class="section-break"></div>
-      
+      // Adiciona o link de notas de corte
+      if (!linkContainer.hasChildNodes()) {
+        const link = document.createElement('a');
+        link.href = "https://calculaenem.my.canva.site/vestunb/";
+        link.target = "_blank";
+        link.className = "link-cut";
+        link.textContent = "Clique aqui para ver notas de corte";
+        linkContainer.appendChild(link);
+      }
     }
 
-    // Só calcula quando o usuário clicar no botão
     calcBtn.addEventListener('click', recalc);
   </script>
 </body>
